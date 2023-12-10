@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ * Main Home Page Controller
  */
 class main extends Controller
 {

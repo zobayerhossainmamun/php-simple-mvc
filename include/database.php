@@ -1,4 +1,7 @@
 <?php
+/**
+ * This class used to connect and manage database.
+ */
 class Database extends PDO{
 	function __construct(){
 		try {
@@ -9,7 +12,14 @@ class Database extends PDO{
 			echo $e;
 		}
 	}
-	public function select($sql,$data = array() , $fetchStyle = PDO::FETCH_ASSOC){
+	/**
+	 * Select Data From database
+	 * @param string $name
+	 * @param array $data
+	 * @param PDO::FETCH_ASSOC $fetchStyle
+	 * @return array
+	 */
+	public function select($sql, $data = array(), $fetchStyle = PDO::FETCH_ASSOC){
 		$stmt = $this->prepare($sql);
 		foreach ($data as $key => $value) {
 			$stmt->bindParam($key,$value);
@@ -18,6 +28,12 @@ class Database extends PDO{
 		return $stmt->fetchAll($fetchStyle);
 	}
 
+	/**
+	 * Insert data into table
+	 * @param string $table
+	 * @param array $data
+	 * @return bool
+	 */
 	public function insert($table, $data){
 		ksort($data);
 		$fieldNames = implode(',', array_keys($data));
@@ -30,6 +46,14 @@ class Database extends PDO{
 		}
 		return $stmt->execute();		
 	}
+
+	/**
+	 * Update data to database
+	 * @param string $table
+	 * @param array $data
+	 * @param string $where
+	 * @return bool
+	 */
 	public function update($table, $data, $where){
         $updateKeys = NULL;
 	 	foreach ($data as $key => $value) {
@@ -43,10 +67,23 @@ class Database extends PDO{
 	 	}
 	 	return $stmt->execute();
 	}
+
+	/**
+	 * Execute sql raw query
+	 * @param string $sql
+	 * @return bool
+	 */
 	public function extra_query($sql){
 	 	$stmt = $this->prepare($sql);
 	 	return $stmt->execute();
 	}
+
+	/**
+	 * Delete data from database
+	 * @param string $table
+	 * @param string $where
+	 * @return PDO::exec()
+	 */
 	public function delete($table, $where){
 		$sql = "DELETE FROM $table WHERE $where";
         return $this->exec($sql);

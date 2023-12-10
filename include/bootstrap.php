@@ -1,18 +1,47 @@
 <?php
-
+/**
+ * Class  Bootstrap
+ */
 class Bootstrap {
 
+    /**
+     * Base url.
+     *
+     * @var string
+     */
     protected $_url;
+
+    /**
+     * Controller
+     *
+     * @var string
+     */
     private $_controller = NULL;
+    
+    /**
+     * Default Controller
+     *
+     * @var string
+     */
     private $_defaultController;
 
+    /**
+     * Bootstrap Constructor
+     */
     public function __construct(){
         $this->_getUrl();
     }
+
+    /**
+     * Set Default Controller
+     */
     public function setController($name){
         $this->_defaultController = $name; 
     }
 
+    /**
+     * Initiate Controller
+     */
     public function init(){
         if(empty($this->_url[0])){
             $this->_loadDefaultController();
@@ -22,35 +51,43 @@ class Bootstrap {
         $this->_callControllerMethod();
     }
 
+    /**
+     * Get url from parameter
+     */
     protected function _getUrl(){
         $url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : NULL;
         $url = filter_var($url, FILTER_SANITIZE_URL);
         $this->_url = explode('/',$url);
     }
 
+    /**
+     * Load default controller
+     */
     protected function _loadDefaultController(){
         require DOCROOT.'/controller/'.$this->_defaultController.'.php';
         $this->_controller = new $this->_defaultController();
         $this->_controller->index();
     }
 
+    /**
+     * Load existing controller
+     */
     protected function _loadExistingController(){
-
         //set url for controllers
         $file = DOCROOT.'/controller/'.$this->_url[0].'.php';
 
         if(file_exists($file)){
             require $file;
-
             //instatiate controller
             $this->_controller = new $this->_url[0];
-
-
         } else {
             return false;
         }
-
     }
+
+    /**
+     * Call controller method
+     */
     protected function _callControllerMethod()
     {
         $length = count($this->_url);
@@ -62,8 +99,6 @@ class Bootstrap {
                 return false;
             }
         }
-
-        
         // Determine what to load
         switch ($length) {
             case 5:
